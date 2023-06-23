@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Nuova recensione</title>
+	<link rel="stylesheet" href="/css/stile.css" />
+</head>
+
+<body>
+    <header>
+        <div th:if="${userDetails}">
+            <span th:text="${userDetails.username}"></span>
+            <a href="/logout">Logout</a>
+        </div>
+        <div th:unless="${user}">
+          <a href="/login">Login</a>
+        </div>
+    </header>
+    <div><a href="/"><img src="/logo-siw.png" width="10%"/></a></div>
+
+    <h1>Scrivi la tua recensione</h1>
+	<form th:action="@{'/newReview' + '/' + ${movie.id} + '/' + ${userDetails.id}}" method="POST" th:object="${review}">
+		<div th:if="${#fields.hasGlobalErrors()}">
+			<p> 
+                <div> Hai già scritto una recensione per <span th:text="${movie.title}"> Up! </span> </div> 
+                <div> vuoi modificare la recensione già esistente o tornare indietro? </div>
+                <a th:href="@{'/movie' + '/' + ${movie.id}}"> indietro </a> 
+                <a th:href="@{'/formModifyReview' + '/' + ${movie.id}}"> modifica </a>
+            </p>
+		</div>
+		<div th:unless="${#fields.hasGlobalErrors()}">
+			<div>
+			<label for="title">Titolo:</label> <span><input required type="text" th:field="${review.title}" id="title"/></span>
+			<span th:if="${#fields.hasErrors('title')}" th:errors="*{title}"> </span>
+			</div>
+
+			<div>
+				<label for="vote">Voto:</label> <span><input required type="number" min="1" max="5" th:field="${review.vote}" id="vote"/></span>
+				<span th:if="${#fields.hasErrors('vote')}" th:errors="*{vote}"> </span>
+			</div>
+
+			<div>
+				<label for="text">Testo:</label> <span><input required type="text" th:field="${review.text}" id="text"/></span>
+				<span th:if="${#fields.hasErrors('text')}" th:errors="*{text}"> </span>
+			</div>
+		
+			<div>
+				<span><button type="submit">Conferma</button></span>
+			</div>
+		</div>
+		
+	</form>
+    
+
+</body>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Aggiorna Film</title>
+	<link rel="stylesheet" href="/css/stile.css" />
+</head>
+
+<body>
+  <header>
+    <div th:if="${userDetails}">
+      <span th:text="${userDetails.username}"></span>
+      <a href="/logout">Logout</a>
+    </div>
+    <div th:unless="${user}">
+      <a href="/login">Login</a>
+    </div>
+  </header>
+	<div><a href="/"><img src="/logo-siw.png" width="10%"/></a></div>
+
+    <h1> Per modificare dettagli dell'artista</h1>
+
+    <form th:action="@{'/admin/modifyArtist' + '/' + ${artist.id}}" method="POST" >
+      
+      <div>
+        Nuovo nome: <input th:text="${artist.name}" type="text" th:value="${name}" name="name"/> 
+      </div>
+  
+      <div>
+        Nuovo cognome: <input th:text="${artist.surname}" type="text" th:value="${surname}" name="surname"/>
+      </div>
+
+      <div>
+        Nuova data di nascita: <input th:text="${artist.birth}" type="date" th:value="${birth}" name="birth"/> 
+      </div>
+  
+      <div>
+        Nuova data di morte: <input th:text="${artist.death}" type="date" th:value="${death}" name="death"/>
+      </div>
+
+      <div>
+        Nuova fotografia (lasciare vuoto se non la si vuole cambiare): <input type="file" name="photo" accept="photo/png, photo/jpeg, photo/jpg" />
+      </div>
+
+      <div>
+        <span><button type="submit">Conferma</button></span>
+      </div>
+    </form>
+  </body>
+</html>

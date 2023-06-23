@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+			Operazioni Su Film
+		</title>
+		<link rel="stylesheet" href="/css/stile.css" />
+	</head>
+	<body>
+		<header>
+			<div th:if="${userDetails}">
+				<span th:text="${userDetails.username}"></span>
+				<a href="/logout">Logout</a>
+			</div>
+			<div th:unless="${user}">
+				<a href="/login">Login</a>
+			</div>
+		</header>
+		<div><a href="/"><img src="/logo-siw.png" width="10%"/></a></div>
+		<h1>Operazioni</h1>
+		<div>
+			<a th:href="@{/admin/formNewMovie}">Inserisci i dati di un film</a>
+		</div>
+		<div>
+			<a th:href="@{/admin/manageMovies}">Gestisci i film</a>
+		</div>
+	</body>
+</html>

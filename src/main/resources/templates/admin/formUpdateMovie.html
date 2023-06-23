@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Aggiorna Film</title>
+	<link rel="stylesheet" href="/css/stile.css" />
+</head>
+
+<body>
+  <header>
+    <div th:if="${userDetails}">
+      <span th:text="${userDetails.username}"></span>
+      <a href="/logout">Logout</a>
+    </div>
+    <div th:unless="${user}">
+      <a href="/login">Login</a>
+    </div>
+  </header>
+	<div><a href="/"><img src="/logo-siw.png" width="10%"/></a></div>
+	<h1 >Aggiorna artisti del film</h1>
+    <div th:text="${movie.title} + ' (' + ${movie.year} + ')'"> Up! (2000) </div>
+    <div th:if="${movie.director}"> Regista: <span th:text="${movie.director.name} + ' ' + ${movie.director.surname}"> Stanley Kubrick </span> <a th:href="@{'/directorsToAdd' + '/' + ${movie.id}}"> Modifica regista </a> </div> 
+    <div th:unless="${movie.director}"> <a th:href="@{'/admin/directorsToAdd' + '/' + ${movie.id}}"> Aggiungi regista </a> </div>
+    <h2> Attori: </h2>
+    <div th:if="${artists}">
+      <ul>
+        <li th:each="artist : ${artists}">
+          <div th:text="${artist.name}"> Stanley Kubrick </div>
+        </li>
+      </ul>
+      <a th:href="@{'/admin/actorsToAdd' + '/' + ${movie.id}}"> Aggiorna lista di attori </a>
+    </div>
+    <div th:unless="${artists}"> 
+      <a th:href="@{'/admin/actorsToAdd' + '/' + ${movie.id}}"> Aggiungi attori </a>
+    </div>
+
+    <h1> Per modificare dettagli del film</h1>
+
+    <form th:action="@{'/admin/modifyMovie' + '/' + ${movie.id}}" method="POST" >
+      
+      <div>
+        Nuovo titolo: <input th:text="${movie.title}" type="text" th:value="${title}" name="title"/> 
+      </div>
+  
+      <div>
+        Nuovo anno: <input th:text="${movie.year}" type="text" th:value="${year}" name="year"/>
+      </div>
+
+      <div>
+        Nuova immagine (lasciare vuoto se non la si vuole cambiare): <input type="file" name="image" accept="image/png, image/jpeg, image/jpg" />
+      </div>
+
+      <div>
+        <span><button type="submit">Conferma</button></span>
+      </div>
+    </form>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Artista</title>
+	<link rel="stylesheet" href="/css/stile.css" />
+</head>
+
+<body>
+	<header>
+		<div th:if="${userDetails}">
+			<span th:text="${userDetails.username}"></span>
+			<a href="/logout">Logout</a>
+		</div>
+		<div th:unless="${user}">
+			<a href="/login">Login</a>
+		</div>
+	</header>
+	<div><a href="/"><img src="/logo-siw.png" width="10%"/></a></div>
+	<h1>Artisti che soddisfano i requisiti</h1>
+	<div th:if="${artists.isEmpty()}">Non ci sono artisti che soddisfano i requisiti</div>
+	<div th:unless="${artists.isEmpty()}">
+		<ul>
+			<li th:each="artist : ${artists}">
+				<a th:href="@{'/artists' + '/' + ${artist.id}}"
+					th:text="${artist.name} + ${artist.surname}">Stanley Kubrick</a>
+			</li>
+		</ul>
+	</div>
+</body>
+
+</html>

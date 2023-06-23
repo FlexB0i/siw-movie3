@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>
+		Homepage
+	</title>
+	<link rel="stylesheet" href="/css/stile.css" />
+</head>
+
+<body>
+    <header>
+        <div th:if="${userDetails}">
+            <span th:text="${userDetails.username}"></span>
+            <a href="/logout">Logout</a>
+        </div>
+        <div th:unless="${user}">
+            <a href="/login">Login</a>
+        </div>
+    </header>
+    <div><a href="/"><img src="/logo-siw.png" width="10%"/></a></div>
+    <h1>Operazioni di consultazione: </h1>
+    <div>
+        <a th:href="@{/indexMovie}">Consulta database dei film</a>
+    </div>
+    <div>
+        <a th:href="@{/indexArtist}">Consulta database degli artisti</a>
+    </div>
+    <h1>Operazioni di modifica:</h1>
+    <div>
+        <a th:href="@{/admin/indexMovieAdmin}">Modifica database dei film</a>
+    </div>
+    <div>
+        <a th:href="@{/admin/indexArtistAdmin}">Modifica database degli artisti</a>
+    </div>
+</body>

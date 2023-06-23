@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Modifica recensione</title>
+	<link rel="stylesheet" href="/css/stile.css" />
+</head>
+
+<body>
+    <header>
+        <div th:if="${userDetails}">
+            <span th:text="${userDetails.username}"></span>
+            <a href="/logout">Logout</a>
+        </div>
+        <div th:unless="${user}">
+          <a href="/login">Login</a>
+        </div>
+    </header>
+    <div><a href="/"><img src="/logo-siw.png" width="10%"/></a></div>
+
+    <h1>Scrivi la tua recensione</h1>
+	<form th:action="@{'/modifyReview' + '/' + ${review.id}}" method="POST" >
+		
+		<div>
+			Nuovo titolo: <input th:text="${review.title}"  type="text" th:value="${title}" name="title"/>
+		</div>
+
+		<div>
+			Nuovo voto: <input th:text="${review.vote}"  type="text" th:value="${vote}" name="vote"/>
+		</div>
+
+		<div>
+			Nuovo testo: <input th:text="${review.text}"  type="text" th:value="${text}" name="text"/>
+		</div>
+		
+		<div>
+			<span><button type="submit">Conferma</button></span>
+		</div>
+	</form>
+    
+
+</body>

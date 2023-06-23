@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Aggiorna attori</title>
+	<link rel="stylesheet" href="/css/stile.css" />
+    </head>
+    <body>
+        <header>
+			<div th:if="${userDetails}">
+				<span th:text="${userDetails.username}"></span>
+				<a href="/logout">Logout</a>
+			</div>
+			<div th:unless="${user}">
+				<a href="/login">Login</a>
+			</div>
+		</header>
+        <div><a href="/"><img src="/logo-siw.png" width="10%"/></a></div>
+        <h1 th:text="${movie.title}"> Aggiorna attori per Up! </h1>
+        <h2> Attori aggiunti nel film</h2>
+        <ul>
+            <li th:each="artist : ${artistsInFilm}">
+                <a th:href="@{'/admin/removeActor' + '/' + ${movie.id} + '/' + ${artist.id}}" th:text="${artist.name}"> Stanley Kubrick </a>
+            </li>
+        </ul>
+        <h2> Attori non aggiunti nel film </h2>
+        <ul>
+            <li th:each="artist : ${artistsNotInFilm}">
+                <a th:href="@{'/admin/addActor' + '/' + ${movie.id} + '/' + ${artist.id}}" th:text="${artist.name}"> Stanley Kubrick </a>
+            </li>
+        </ul>
+        <a th:href="@{'/admin/formUpdateMovie' + '/' + ${movie.id}}"> Fine </a>
+    </body>
+</html>
