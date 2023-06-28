@@ -21,7 +21,7 @@
     <span th:if="${artist.death}">
       <span th:text=" ' - ' + ${artist.death}"> - 00/00/00 </span> 
     </span>
-    <div><img width="30%" th:src="/@{${movie.imagePath}}" /> </div>
+    <div><img width="30%" th:src="${artist.getPhotoPath}" /> </div>
   </div>
   <div th:unless="${artist}">Artista non trovato</div>
   </body>

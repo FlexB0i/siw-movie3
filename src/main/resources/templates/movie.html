@@ -19,11 +19,22 @@
     <div th:if="${movie}">
 	    <h1 th:text="${movie.title}">UP!</h1>
         <div>Anno: <span th:text="'(' + ${movie.year} + ')'">2000</span></div>
-        <span><img width="30%" th:src="/@{${movie.imagePath}}" /> </span>
+        <span><img width="30%" th:src="${movie.getImagePath()}" /> </span>
       <p> <span> Recensioni: </span> <a th:href="@{'/formNewReview' + '/' + ${movie.id}}"> aggiungi recensione </a> </p>
+
+      <div th:if="${userReview != null}">
+        <div th:text="${userReview.userUsername}"> username </div>
+        <div>
+          <span th:text="${userReview.title} + ' ' + ${userReview.vote} + '/5' + ' ' ">Grandioso! 4/5 </span>
+          <a th:href="@{'/deleteReview' + '/' + ${userReview.id} + '/' + ${movie.id}}"> elimina recensione </a>
+        </div>
+        <div th:text="${userReview.text}"> Davvero un bel film</div>
+      </div>
+
       <ul th:if="${!reviews.isEmpty()}">
         <li th:each="review : ${reviews}">
-            <div th:text="${review.title} + ${review.vote} + '/5'">Grandioso! 4/5 </div>
+            <div th:text="${review.userUsername}"> username </div>
+            <div th:text="${review.title} + ' ' + ${review.vote} + '/5'">Grandioso! 4/5 </div>
             <div th:text="${review.text}"> Davvero un bel film</div>
         </li>
       </ul>

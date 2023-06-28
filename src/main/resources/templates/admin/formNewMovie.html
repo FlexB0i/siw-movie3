@@ -20,7 +20,7 @@
 	</header>
 	<div><a href="/"><img src="/logo-siw.png" width="10%"/></a></div>
 	<h1>Aggiungi un film</h1>
-	<form th:action="@{/newMovie}" method="POST" th:object="${movie}" enctype="multipart/form-data">
+	<form th:action="@{/admin/newMovie}" method="POST" th:object="${movie}" enctype="multipart/form-data">
 		<div th:if="${#fields.hasGlobalErrors()}">
 			<p th:each="err:${#fields.globalErrors()}" th:text="{err}"> Errore </p>
 		</div>

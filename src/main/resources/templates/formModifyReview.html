@@ -21,15 +21,15 @@
 	<form th:action="@{'/modifyReview' + '/' + ${review.id}}" method="POST" >
 		
 		<div>
-			Nuovo titolo: <input th:text="${review.title}"  type="text" th:value="${title}" name="title"/>
+			Nuovo titolo: <input type="text" th:value="${review.title}" name="title"/>
 		</div>
 
 		<div>
-			Nuovo voto: <input th:text="${review.vote}"  type="text" th:value="${vote}" name="vote"/>
+			Nuovo voto: <input  type="text" th:value="${review.vote}" name="vote"/>
 		</div>
 
 		<div>
-			Nuovo testo: <input th:text="${review.text}"  type="text" th:value="${text}" name="text"/>
+			Nuovo testo: <input  type="text" th:value="${review.text}" name="text"/>
 		</div>
 		
 		<div>

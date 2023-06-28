@@ -28,13 +28,13 @@ public class Review {
 	@NotBlank
 	private String text;
 	
-	@NotNull
 	@ManyToOne
 	private Movie movieReviewed;
 	
-	@NotNull
 	@ManyToOne
 	private User writer;
+	
+	private String userUsername;
 
 	public Long getId() {
 		return id;
@@ -52,7 +52,7 @@ public class Review {
 		this.title = title;
 	}
 
-	public int getVote() {
+	public Integer getVote() {
 		return vote;
 	}
 
@@ -82,6 +82,14 @@ public class Review {
 
 	public void setWriter(User writer) {
 		this.writer = writer;
+	}
+
+	public String getUserUsername() {
+		return userUsername;
+	}
+
+	public void setUserUsername(String userUsername) {
+		this.userUsername = userUsername;
 	}
 	
 	

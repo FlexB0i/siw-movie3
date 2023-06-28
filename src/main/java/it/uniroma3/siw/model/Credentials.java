@@ -13,9 +13,11 @@ public class Credentials {
 
 	public static final String ADMIN_ROLE = "admin";
 
+	public static final String DEFAULT_ROLE = "deafault";
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+	Long id;
 
 	@NotNull
 	String username;

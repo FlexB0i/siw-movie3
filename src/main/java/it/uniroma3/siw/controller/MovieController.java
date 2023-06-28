@@ -18,8 +18,12 @@ import org.springframework.web.multipart.MultipartFile;
 import it.uniroma3.siw.codeJava.FileUploadUtil;
 import it.uniroma3.siw.model.Artist;
 import it.uniroma3.siw.model.Movie;
+import it.uniroma3.siw.model.Review;
+import it.uniroma3.siw.model.User;
 import it.uniroma3.siw.service.ArtistService;
+import it.uniroma3.siw.service.CredentialsService;
 import it.uniroma3.siw.service.MovieService;
+import it.uniroma3.siw.service.ReviewService;
 import it.uniroma3.siw.validator.MovieValidator;
 import jakarta.validation.Valid;
 
@@ -28,7 +32,10 @@ public class MovieController {
   @Autowired MovieService movieService;
   @Autowired ArtistService artistService ;
   @Autowired MovieValidator movieValidator;
-
+  @Autowired CredentialsService credentialsService;
+  @Autowired GlobalController globalController;
+  @Autowired ReviewService reviewService;
+  
   // ********************************************** //
   // CONTROLLER PER RICHIESTE DI UN UTENTE GENERICO
   //********************************************** //
@@ -58,12 +65,22 @@ public class MovieController {
   @GetMapping("/movie/{id}")
   public String movie(Model model,@PathVariable("id") Long id) {
 	  Movie movie = this.movieService.findMovieById(id);
-	  model.addAttribute("movie", movie);
-	  model.addAttribute("reviews", movie.getReviews());
+	  User user = this.credentialsService.getCredentials(globalController.getUser().getUsername()).getUser();
+	  Review writtenReview = reviewService.findWrittenReview(movie, user);
+	  
+	  if (user != null) {		
+		model.addAttribute("userReview", writtenReview);
+	} else
+		  model.addAttribute("userReview", null);
+	  
+	  List<Review> movieReviews = movie.getReviews();
+	  movieReviews.remove(writtenReview);
+	  
+	  model.addAttribute("movie", movie);	  
+	  model.addAttribute("reviews", movieReviews);
 	  return "movie.html";
   }
 
-  
   //************************************* //
   // CONTROLLER PER RICHIESTE DI UN ADMIN
   //************************************* //
@@ -94,25 +111,24 @@ public class MovieController {
 		  String uploadDir = "movie-image/" + savedMovie.getId();
 		  FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
 		  
-		  model.addAttribute("movie", movie);
-		  model.addAttribute("reviews", movie.getReviews());
-		  return "movie.html";
+		  
+		  return "redirect:/movie/" + movie.getId();
 	  }
 	  else {
 		  return "admin/formNewMovie.html";
     }
   }
-
-  @GetMapping("/admin/manageMovies/{id}")
-  public String getMovie(@PathVariable("id") Long id, Model model) {
-    Movie movie = this.movieService.findMovieById(id);
-    if(movie!=null) {
-    	model.addAttribute("movie", movie);
-    	return "movie.html";
-    }
-    else
-    	return "movieError.html";
-  }
+//
+//  @GetMapping("/admin/manageMovies/{id}")
+//  public String getMovie(@PathVariable("id") Long id, Model model) {
+//    Movie movie = this.movieService.findMovieById(id);
+//    if(movie!=null) {
+//    	model.addAttribute("movie", movie);
+//    	return "movie.html";
+//    }
+//    else
+//    	return "movieError.html";
+//  }
 
   @GetMapping("/admin/manageMovies")
   public String showMovies(Model model) {
@@ -224,28 +240,13 @@ public class MovieController {
   
   @PostMapping ("/admin/modifyMovie/{id}")
   public String modifyMovie (Model model, @PathVariable("id") Long id, 
-		  @RequestParam String title, @RequestParam Integer year, @RequestParam MultipartFile image) throws IOException {
+		  @RequestParam String title, @RequestParam Integer year) throws IOException {
 	  
 	  Movie movie = this.movieService.findMovieById(id);
 	  if (movie == null)
 		  return "movieError.html";
 	  this.movieService.modifyMovie(movie, title, year);
-	  
-	  if (image != null) {
-		  String fileName = StringUtils.cleanPath(image.getOriginalFilename());
-		  movie.setImage(fileName);
-		  
-		  Movie savedMovie = this.movieService.saveMovie(movie);
-		  
-		  String uploadDir = "movie-image/" + savedMovie.getId();
-		  FileUploadUtil.saveFile(uploadDir, fileName, image);
-	  }
-	  else
-		  this.movieService.saveMovie(movie);
-	
-	  
-	  model.addAttribute("movie", movie);
-	  model.addAttribute("reviews", movie.getReviews());
-	  return "movie.html";
+
+	  return "redirect:/movie/" + id;
   }
 }

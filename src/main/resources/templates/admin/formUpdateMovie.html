@@ -38,15 +38,11 @@
     <form th:action="@{'/admin/modifyMovie' + '/' + ${movie.id}}" method="POST" >
       
       <div>
-        Nuovo titolo: <input th:text="${movie.title}" type="text" th:value="${title}" name="title"/> 
+        Nuovo titolo: <input type="text" th:value="${movie.title}" name="title"/> 
       </div>
   
       <div>
-        Nuovo anno: <input th:text="${movie.year}" type="text" th:value="${year}" name="year"/>
-      </div>
-
-      <div>
-        Nuova immagine (lasciare vuoto se non la si vuole cambiare): <input type="file" name="image" accept="image/png, image/jpeg, image/jpg" />
+        Nuovo anno: <input type="text" th:value="${movie.year}" name="year"/>
       </div>
 
       <div>

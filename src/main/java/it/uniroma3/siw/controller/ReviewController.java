@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import it.uniroma3.siw.model.Movie;
 import it.uniroma3.siw.model.Review;
 import it.uniroma3.siw.model.User;
+import it.uniroma3.siw.service.CredentialsService;
 import it.uniroma3.siw.service.MovieService;
 import it.uniroma3.siw.service.ReviewService;
 import it.uniroma3.siw.service.UserService;
@@ -23,6 +24,8 @@ import jakarta.validation.Valid;
 public class ReviewController {
 
 	@Autowired
+	GlobalController globalController;
+	@Autowired
 	ReviewValidator reviewValidator;
 	@Autowired
 	ReviewService reviewService;
@@ -30,6 +33,8 @@ public class ReviewController {
 	MovieService movieService;
 	@Autowired
 	UserService userService;
+	@Autowired
+	CredentialsService credentialsService;
 	
 	 @GetMapping("/formNewReview/{id}")
 	 public String formNewReview(Model model, @PathVariable("id") Long id) {
@@ -38,20 +43,24 @@ public class ReviewController {
 		 return "formNewReview.html";
 	 }
 	 
-	 @PostMapping("/newReview/{movieId}/{userId}")
+	 @PostMapping("/newReview/{movieId}")
 	 public String newReview(@Valid @ModelAttribute("review") Review review, BindingResult bindingResult, Model model,
-			 @PathVariable("movieId") Long movieId, @PathVariable("userId") Long userId) {
+			 @PathVariable("movieId") Long movieId) {
 		 
-		this.reviewValidator.validate(review, bindingResult);
+		String userUsername = globalController.getUser().getUsername();
 		Movie movie = this.movieService.findMovieById(movieId);
-		User user = this.userService.findUserById(userId);
+		User user = this.credentialsService.getCredentials(userUsername).getUser();
+		
+		this.reviewService.setMovieAndWriter(review, user, movie, userUsername);
+		this.reviewValidator.validate(review, bindingResult);
 		
 		if (!bindingResult.hasErrors()) {
-			this.reviewService.setMovieAndWriter(review, user, movie);
+			user.getReviews().add(review);
+			movie.getReviews().add(review);
+			this.movieService.saveMovie(movie);
+			this.userService.saveUser(user);
 			this.reviewService.saveReview(review);
-			model.addAttribute("movie", movie);
-			model.addAttribute("reviews", movie.getReviews());
-			return "movie.html";
+			return "redirect:/movie/" + movieId;
 		}
 		else {
 			model.addAttribute("movie", movie);
@@ -59,10 +68,10 @@ public class ReviewController {
 		}
 	 }
 
-	 @GetMapping("/formModifyReview/{movieId}/{userId}")
-	 public String formModifyReview (Model model, @PathVariable("movieId") Long movieId, @PathVariable("userId") Long userId  ) {
+	 @GetMapping("/formModifyReview/{movieId}")
+	 public String formModifyReview (Model model, @PathVariable("movieId") Long movieId) {
 		 Movie movie = this.movieService.findMovieById(movieId);
-		 User user = this.userService.findUserById(userId);
+		 User user = this.credentialsService.getCredentials(globalController.getUser().getUsername()).getUser();
 		 Review review = this.reviewService.findWrittenReview(movie, user);
 		 
 		 if (review != null) {
@@ -85,5 +94,12 @@ public class ReviewController {
 		 model.addAttribute("reviews", movieReviewed.getReviews());
 		 
 		 return "movie.html";
+	 }
+	 
+	 @GetMapping("/deleteReview/{reviewId}/{movieId}")
+	 public String deleteReview(Model model, @PathVariable("reviewId") Long reviewId, @PathVariable("movieId") Long movieId) {
+		 User user = this.credentialsService.getCredentials(globalController.getUser().getUsername()).getUser();
+		 this.reviewService.deleteReview(reviewId, movieId, user);
+		 return "redirect:/movie/" + movieId;
 	 }
 }

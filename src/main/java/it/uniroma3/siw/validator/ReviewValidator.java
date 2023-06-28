@@ -12,10 +12,11 @@ public class ReviewValidator implements Validator{
 	@Override
 	public void validate(Object o, Errors errors) {
 		Review review = (Review) o;
-		
-		for (Review r : review.getMovieReviewed().getReviews()) {
-			if (review.getWriter().equals(r.getWriter()))
-				errors.reject("review.duplicate");
+		if (review.getMovieReviewed() != null) {
+			for (Review r : review.getMovieReviewed().getReviews()) {
+				if (review.getWriter().equals(r.getWriter()))
+					errors.reject("review.duplicate");
+			}
 		}
 		
 	}
