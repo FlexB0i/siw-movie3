@@ -36,13 +36,6 @@ public class ReviewController {
 	@Autowired
 	CredentialsService credentialsService;
 	
-	 @GetMapping("/formNewReview/{id}")
-	 public String formNewReview(Model model, @PathVariable("id") Long id) {
-		 model.addAttribute("review", new Review());
-		 model.addAttribute("movie", this.movieService.findMovieById(id));
-		 return "formNewReview.html";
-	 }
-	 
 	 @PostMapping("/newReview/{movieId}")
 	 public String newReview(@Valid @ModelAttribute("review") Review review, BindingResult bindingResult, Model model,
 			 @PathVariable("movieId") Long movieId) {
@@ -52,54 +45,44 @@ public class ReviewController {
 		User user = this.credentialsService.getCredentials(userUsername).getUser();
 		
 		this.reviewService.setMovieAndWriter(review, user, movie, userUsername);
-		this.reviewValidator.validate(review, bindingResult);
 		
-		if (!bindingResult.hasErrors()) {
-			user.getReviews().add(review);
-			movie.getReviews().add(review);
-			this.movieService.saveMovie(movie);
-			this.userService.saveUser(user);
-			this.reviewService.saveReview(review);
-			return "redirect:/movie/" + movieId;
-		}
-		else {
-			model.addAttribute("movie", movie);
-			return "formNewReview.html";
-		}
+		user.getReviews().add(review);
+		movie.getReviews().add(review);
+			
+		this.movieService.setVote(movie,review.getVote());
+			
+		this.movieService.saveMovie(movie);
+		this.userService.saveUser(user);
+		this.reviewService.saveReview(review);
+		return "redirect:/movie/" + movieId;
 	 }
 
-	 @GetMapping("/formModifyReview/{movieId}")
-	 public String formModifyReview (Model model, @PathVariable("movieId") Long movieId) {
-		 Movie movie = this.movieService.findMovieById(movieId);
-		 User user = this.credentialsService.getCredentials(globalController.getUser().getUsername()).getUser();
-		 Review review = this.reviewService.findWrittenReview(movie, user);
-		 
-		 if (review != null) {
-			model.addAttribute("review", review);
-			return "formModifyReview.html";
-		 }
-		 return "reviewError.html";
-	 }
 	 
 	 @PostMapping("/modifyReview/{id}")
 	 public String modifyReview (Model model,@PathVariable("id") Long id, @RequestParam String title, @RequestParam Integer vote, @RequestParam String text) {
+		
 		 Review review = this.reviewService.findReviewById(id);
+		 Movie movie = review.getMovieReviewed();
+		 this.movieService.deleteOldVote(review.getVote(), movie);
 		 
 		 this.reviewService.modifyReview(review, title, vote, text);
-		 
 		 this.reviewService.saveReview(review);
+		 this.movieService.setVote(movie, review.getVote());
+		 this.movieService.saveMovie(movie);
+		
 		 
-		 Movie movieReviewed = review.getMovieReviewed();
-		 model.addAttribute("movie", movieReviewed);
-		 model.addAttribute("reviews", movieReviewed.getReviews());
-		 
-		 return "movie.html";
+		 return "redirect:/movie/" + movie.getId();
 	 }
 	 
 	 @GetMapping("/deleteReview/{reviewId}/{movieId}")
 	 public String deleteReview(Model model, @PathVariable("reviewId") Long reviewId, @PathVariable("movieId") Long movieId) {
 		 User user = this.credentialsService.getCredentials(globalController.getUser().getUsername()).getUser();
+		 Review review = this.reviewService.findReviewById(reviewId);
+		 Movie movie = review.getMovieReviewed();
+		 
+		 this.movieService.deleteOldVote(review.getVote(), movie);
 		 this.reviewService.deleteReview(reviewId, movieId, user);
+		 this.movieService.saveMovie(movie);
 		 return "redirect:/movie/" + movieId;
 	 }
 }

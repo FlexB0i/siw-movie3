@@ -1,28 +1,106 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Artista</title>
+      <!--Bootstrap Css-->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+    <title>Artist</title>
 	<link rel="stylesheet" href="/css/stile.css" />
 </head>
 
 <body>
-  <header>
-    <div th:if="${userDetails}">
-      <span th:text="${userDetails.username}"></span>
-      <a href="/logout">Logout</a>
+  <header class="container-fluid shadow-sm">
+    <div class="row">
+<div class="col header-col text-start">
+            <a href="/" >
+                <img src="/images/logo.png"/>
+            </a>
+        </div>
+        <div class="col h2 header-col text-center">
+          <form th:action="@{/searchArtists}" method="post">
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" name="name" placeholder="Cerca artista per nome, cognome o entrambi" aria-label="name" aria-describedby="basic-addon1">
+              <span class="input-group-text" id="basic-addon1"> 
+                <button type="submit" class="btn" > 
+                  <img src="/images/lente.png"> 
+                </button> 
+              </span>
+              </div>
+          </form>
+        </div>
+        <div class="col header-col text-end">
+            <div class="dropdown header-dropdown">
+                <button class="btn dropdown-toggle header-dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <img src="/images/dropdown menu.png">
+                </button>
+                <ul th:if="${userDetails}" class="dropdown-menu header-dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <li> 
+                        <div class="dropdown-item header-dropdown-item" style="cursor: default; pointer-events: none;"> 
+                            <img src="/images/avatar.png">
+                            <span th:text="${userDetails.username}"> username </span> 
+                        </div>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li ><a class="dropdown-item" href="/login">Login con un altro account</a></li>
+                    <li ><a class="dropdown-item" href="/register">Crea nuovo account</a></li>
+                    <li> <a class="dropdown-item" href="/logout">Logout</a></li>
+                </ul>
+                <ul th:unless="${user}" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <li ><a class="dropdown-item" href="/login">Login</a></li>
+                    <li ><a class="dropdown-item" href="/register">Registrati</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
-    <div th:unless="${user}">
-      <a href="/login">Login</a>
+</header>
+
+    <div class="box-film rounded-2">
+      <div class="flexbox-film">
+        <img th:src="@{${artist.PhotoPath}}" height="400px" width="350px"/>
+        <div class="flexbox-film-interna">  
+          <div class="h1 text-center fw-bolder" th:text="${artist.name} + ' ' + ${artist.surname}">
+            Nome Cognome artista
+          </div>
+          <hr class="text-center ms-3">
+          <div class="flexbox-film-interna-interna h5">
+            <div class="mx-2 my-1">
+              <span class="fw-bold"> Anno di nascita: </span> <span th:text="${artist.birth}"> 00/00/00 </span>
+            </div>
+            <div class="mx-2 my-1" th:if="${artist.death}">
+              <span class="fw-bold"> Anno di morte: </span> <span th:text="${artist.death}"> 00/00/00 </span>
+            </div>
+            <div class="mx-2 my-1">
+              <span class="fw-bold">Film di cui è regista: </span>
+              <ul class="list-group list-group-horizontal text-start" th:if="${!moviesDirected.isEmpty()}">
+                <li class="h6 list-group-item border-0" th:each="movie : ${moviesDirected}">
+                  <a style="text-decoration: none;" th:text="${movie.title}" th:href="@{'/movie/' + ${movie.id}}"> Film </a>
+                </li>
+              </ul>
+              <div th:if="${moviesDirected.isEmpty()}" class="fst-italic">
+                Non è un regista
+              </div>
+            </div>
+            <div class="mx-2 my-1 mb-4">
+              <span class="fw-bold"> Film in cui ha recitato: </span> 
+              <ul class="list-group list-group-horizontal text-start" th:if="${!moviesRecited.isEmpty()}">
+                <li class="h6 list-group-item border-0" th:each="movie : ${moviesRecited}">
+                  <a style="text-decoration: none;" th:text="${movie.title}" th:href="@{'/movie/' + ${movie.id}}"> Film </a>
+                </li>
+              </ul>
+              <div th:if="${moviesRecited.isEmpty()}" class="fst-italic">
+                Non ha recitato in nessun film
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>   
     </div>
-  </header>
-	<div><a href="/"><img src="/logo-siw.png" width="10%"/></a></div>
-  <div th:if="${artist}">
-	  <h1 th:text="${artist.name} + ' ' + ${artist.surname} + ' '">Stanley Kubrick </h1> <span th:text="${artist.birth}"> 00/00/00 </span>
-    <span th:if="${artist.death}">
-      <span th:text=" ' - ' + ${artist.death}"> - 00/00/00 </span> 
-    </span>
-    <div><img width="30%" th:src="${artist.getPhotoPath}" /> </div>
-  </div>
-  <div th:unless="${artist}">Artista non trovato</div>
-  </body>
-</html>
+
+    <footer style="margin-top: 7.05%;">
+      <div class="h5 text-end"> Realizzato da: <div class="h6"> Diego Boi </div> </div>
+    </footer>		

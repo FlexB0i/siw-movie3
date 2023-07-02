@@ -55,7 +55,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
                 		"/","/index","/register",
                 		"/indexMovie", "/movies", "/movie/{id}", "/formSearchMovies", 
                 		"/indexArtist", "/artists", "/artist/{id}", "/formSearchArtists",
-                		"/css/**", "/images/**", "favicon.ico").permitAll()
+                		"/css/**", "/images/**", "favicon.ico", "/movie-image/**", "/artist-photo/**").permitAll()
         		// chiunque (autenticato o no) può mandare richieste POST al punto di accesso per login e register
                 .requestMatchers(HttpMethod.POST,
                 		"/register", "/login",

@@ -6,9 +6,7 @@ import org.springframework.stereotype.Service;
 import it.uniroma3.siw.model.Movie;
 import it.uniroma3.siw.model.Review;
 import it.uniroma3.siw.model.User;
-import it.uniroma3.siw.repository.MovieRepository;
 import it.uniroma3.siw.repository.ReviewRepository;
-import it.uniroma3.siw.repository.UserRepository;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -19,7 +17,7 @@ public class ReviewService {
 	@Autowired
 	MovieService MovieService;
 	@Autowired
-	UserRepository userRepository;
+	UserService userService;
 	
 	@Transactional
 	public void saveReview (Review review) {
@@ -65,7 +63,7 @@ public class ReviewService {
 		this.MovieService.saveMovie(movie);
 		
 		user.getReviews().remove(removedReview);
-		this.userRepository.save(user);
+		this.userService.saveUser(user);
 		
 		this.reviewRepository.deleteById(reviewId);
 	}

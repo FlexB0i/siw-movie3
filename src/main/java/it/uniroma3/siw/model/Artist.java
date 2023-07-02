@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Artist {
@@ -25,7 +26,7 @@ public class Artist {
 	private String name;
 	@NotBlank
 	private String surname;
-	@NotBlank
+	@NotNull
 	private LocalDate birth;
 	
 	private LocalDate death;

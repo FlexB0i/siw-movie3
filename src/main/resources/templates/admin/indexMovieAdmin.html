@@ -1,28 +1,194 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>
-			Operazioni Su Film
-		</title>
-		<link rel="stylesheet" href="/css/stile.css" />
+		<!--Bootstrap Css-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        
+
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <title>
+		    Movie homepage
+	    </title>
+	    <link rel="stylesheet" href="/css/stile.css" />
 	</head>
 	<body>
-		<header>
-			<div th:if="${userDetails}">
-				<span th:text="${userDetails.username}"></span>
-				<a href="/logout">Logout</a>
-			</div>
-			<div th:unless="${user}">
-				<a href="/login">Login</a>
-			</div>
-		</header>
-		<div><a href="/"><img src="/logo-siw.png" width="10%"/></a></div>
-		<h1>Operazioni</h1>
-		<div>
-			<a th:href="@{/admin/formNewMovie}">Inserisci i dati di un film</a>
-		</div>
-		<div>
-			<a th:href="@{/admin/manageMovies}">Gestisci i film</a>
-		</div>
+        <header class="container-fluid shadow-sm">
+            <div class="row">
+				<div class="col header-col text-start">
+                    <a href="/" >
+                        <img src="/images/logo.png"/>
+                    </a>
+                </div>
+                <div class="col h2 header-col text-center">
+                    <form th:action="@{/searchMovies}" method="post">
+                        <div class="input-group mb-3">
+                            <input type="text" th:value="${year}" class="form-control" name="year" placeholder="Cerca film per anno" aria-label="year" aria-describedby="basic-addon1">
+                            <span class="input-group-text" id="basic-addon1"> 
+                                <button type="submit" class="btn" > 
+                                    <img src="/images/lente.png"> 
+                                </button> 
+                            </span>
+                          </div>
+                    </form>
+                </div>
+                <div class="col header-col text-end">
+                    <div class="dropdown header-dropdown">
+                        <button class="btn dropdown-toggle header-dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <img src="/images/dropdown menu.png">
+                        </button>
+                        <ul th:if="${userDetails}" class="dropdown-menu header-dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li> 
+                                <div class="dropdown-item header-dropdown-item" style="cursor: default; pointer-events: none;"> 
+                                    <img src="/images/avatar.png">
+                                    <span th:text="${userDetails.username}"> username </span> 
+                                </div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li ><a class="dropdown-item" href="/login">Login con un altro account</a></li>
+                            <li ><a class="dropdown-item" href="/register">Crea nuovo account</a></li>
+                            <li> <a class="dropdown-item" href="/logout">Logout</a></li>
+                        </ul>
+                        <ul th:unless="${user}" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li ><a class="dropdown-item" href="/login">Login</a></li>
+                            <li ><a class="dropdown-item" href="/register">Registrati</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="h1 principal-h1 fw-bold">I tre film più votati dagli utenti:</div>
+        <div th:if="${movies.isEmpty()}" class="text-center h1 h1-nofilm fst-italic rounded-2">Non ci sono film nel sistema</div>
+        <div class="container-fluid container-top text-center rounded-2 " th:if="${!movies.isEmpty()}">
+            <div class="row row-container-top">
+                <div class="col-3 mt-2" th:if="${thirdMovie}">
+                    <div class="card" style="width: 18rem; height: 520px;">
+                        <a th:href="@{'/admin/movieAdmin' + '/' + ${thirdMovie.id}}"> 
+                            <img th:src="@{${thirdMovie.PhotosImagePath}}" class="card-img-top" height="400px" width="400px"> 
+                        </a>
+                        <div class="card-body text-start align-items-center">
+                            <h5 class="card-title" th:text="${thirdMovie.title}">Titolo film</h5>
+                            <h6 class="card-subtitle mb-2 text-muted ">Terzo film più votato con <span th:text="${thirdMovie.vote} + '/5'"> 3/5</span></h6>
+                            <p class="card-text"> 
+                                <span> Regista: </span> <a th:if="${thirdMovie.director != null}" style="text-decoration: none;" th:href="@{'/artist/' + ${thirdMovie.director.id}}" th:text="${thirdMovie.director.name} + ' ' + ${thirdMovie.director.surname}"> Stanley Kubrick</a>
+                                <span th:if="${thirdMovie.director == null}" class="fst-italic"> non trovato</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3 mb-4 mt-2" th:if="${firstMovie}">
+                    <div class="card" style="width: 18rem; height: 520px;">
+                        <a th:href="@{'/admin/movieAdmin' + '/' + ${firstMovie.id}}"> 
+                            <img th:src="@{${firstMovie.PhotosImagePath}}" class="card-img-top" height="400px" width="400px"> 
+                        </a>
+                        <div class="card-body text-start align-items-center">
+                            <h5 class="card-title" th:text="${firstMovie.title}">Titolo film</h5>
+                            <h6 class="card-subtitle mb-2 text-muted ">Film più votato con <span th:text="${firstMovie.vote} + '/5'"> 5/5 </span></h6>
+                            <p class="card-text"> 
+                                <span> Regista: </span> <a th:if="${firstMovie.director != null}" style="text-decoration: none;" th:href="@{'/artist/' + ${firstMovie.director.id}}" th:text="${firstMovie.director.name} + ' ' + ${firstMovie.director.surname}"> Stanley Kubrick</a>
+                                <span th:if="${firstMovie.director == null}" class="fst-italic"> non trovato</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3 mt-2" th:if="${secondMovie}">
+                    <div class="card" style="width: 18rem; height: 520px;">
+                        <a th:href="@{'/admin/movieAdmin' + '/' + ${secondMovie.id}}"> 
+                            <img th:src="@{${secondMovie.PhotosImagePath}}" class="card-img-top" height="400px" width="400px">
+                        </a>
+                        <div class="card-body text-start align-items-center">
+                            <h5 class="card-title" th:text="${secondMovie.title}">Titolo film</h5>
+                            <h6 class="card-subtitle mb-2 text-muted ">Secondo film più votato con <span th:text="${secondMovie.vote} + '/5'"> 4/5</span></h6>
+                            <p class="card-text"> 
+                                <span> Regista: </span> <a th:if="${secondMovie.director != null}" style="text-decoration: none;" th:href="@{'/artist/' + ${secondMovie.director.id}}" th:text="${secondMovie.director.name} + ' ' + ${secondMovie.director.surname}"> Stanley Kubrick</a>
+                                <span th:if="${secondMovie.director == null}" class="fst-italic"> non trovato</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="h1 principal-h1 fw-bold">
+            Lista di tutti i film : 
+        </div> 
+        <div th:if="${movies.isEmpty()}" class="text-center h1 h1-nofilm h1-nofilm-basso fst-italic rounded-2">Non ci sono film nel sistema</div>
+        <div> <a class="h6 add-film-link" th:href="@{/admin/formNewMovie}"> Aggiungi film </a></div>
+        <ul class="list-group film-list-group list-group-flush rounded-2" th:if="${!movies.isEmpty()}">
+            <li th:each="movie : ${movies}" class="list-group-item">
+                <div class="external-list-flexbox">
+                    <a th:href="@{'/admin/movieAdmin' + '/' + ${movie.id}}"> <img th:src="@{${movie.PhotosImagePath}}" width="100px" height="130px"> </a> 
+                    <span class="internal-list-flexbox"> 
+                        <div class="h5" th:text="${movie.title}"> Titolo film</div> 
+                        <div class="h6"> Regista: <a th:if="${movie.director != null}" style="text-decoration: none;" th:href="@{'/artist/' + ${movie.director.id}}" th:text="${movie.director.name} + ' ' + ${movie.director.surname}"> Stanley Kubrick</a>
+                            <span th:if="${movie.director == null}" class="fst-italic"> non trovato</span>
+                        </div> 
+                        <div class="h6"> voto: <span th:text="${movie.vote} + '/5'"> 4/5 </span></div>
+                    </span>
+					<span class="internal-list-flexbox2">
+						<a style="text-decoration: none;" th:href="@{'/admin/movieAdmin' + '/' + ${movie.id}}">
+							Vedi scheda film
+						</a>
+                        <button class="btn btn-delete-film link-primary" style="margin-left: -20%; margin-bottom: -4%; margin-top: -6%;" type="button" data-bs-toggle="offcanvas" th:data-bs-target="'#offcanvasBottom1' + ${movie.id}" th:aria-controls="'offcanvasBottom1' + ${movie.id}">Aggiorna film</button>
+
+                        <div class="offcanvas offcanvas-bottom offcanvas-bottom-update-film text-center" tabindex="-1" th:id="'offcanvasBottom1' + ${movie.id}" th:aria-labelledby="'offcanvasBottomLabel1' + ${movie.id}">
+                            <div class="offcanvas-header align-self-center">
+                                <h2 class="offcanvas-title" th:id="'offcanvasBottomLabel1' + ${movie.id}">Aggiorna i dati del film</h2>
+                            </div>
+                            <div class="offcanvas-body offcanvas-body-update-film">
+                                <form class="adminForm rounded-2" th:action="@{'/admin/modifyMovie' + '/' + ${movie.id}}" method="POST" enctype="multipart/form-data">
+
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1">Nuovo titolo</span>
+                                        <input required th:value="${movie.title}" placeholder="Titolo film" name="title" id="titolo" type="text" class="form-control" aria-label="titolo" aria-describedby="basic-addon1">
+                                    </div>
+                                
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon2">Nuovo anno</span>
+                                        <input required type="number" th:value="${movie.year}" name="year" id="anno" min="1900" max="2023" class="form-control" placeholder="Anno di uscita del film" aria-label="anno" aria-describedby="basic-addon2">
+                                    </div>
+                                
+                                    <div class="input-group mb-3">
+                                        <label class="input-group-text" for="inputGroupSelect01">Nuovo regista</label>
+                                        <select required class="form-select" id="inputGroupSelect01" name="artistId">
+                                              <option th:each="artist : ${artists}"  th:value="${artist.id}" th:text="${artist.name} + ' ' + ${artist.surname}">Stanley Kubrick</option>
+                                        </select>
+                                    </div>
+                                
+                                    <label class="form-label mt-2"> Lasciare vuoto se non si vuole cambiare la locandina del film </label>
+                                    <div class="input-group mb-3">
+                                        <input name="imageFile" accept="image/png, image/jpeg, image/jpg" id="imageFile" type="file" class="form-control" aria-label="imageFile" aria-describedby="basic-addon3">
+                                    </div>
+                                    <div>
+                                        <span><button class="btn btn-primary" type="submit">Conferma</button></span> 
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-delete-film link-primary" style="margin-left: -26%; margin-top: -6%;" type="button" data-bs-toggle="offcanvas" th:data-bs-target="'#offcanvasBottom' + ${movie.id}" th:aria-controls="'offcanvasBottom' + ${movie.id}">Elimina film</button>
+
+                        <div class="offcanvas offcanvas-bottom offcanvas-bottom-delete-film text-center" tabindex="-1" th:id="'offcanvasBottom' + ${movie.id}" th:aria-labelledby="'offcanvasBottomLabel' + ${movie.id}">
+                            <div class="offcanvas-header">
+                                <h5 class="offcanvas-title" th:id="'offcanvasBottomLabel' + ${movie.id}">Sei sicuro di eliminare il film?</h5>
+                            </div>
+                            <div class="offcanvas-body offcanvas-body-delete-film">
+                                <a class="h5 internal-flexbox-link" th:href="@{'/admin/deleteMovie' + '/' + ${movie.id}}">
+                                    Si
+                                </a>
+                                <button class="btn no-btn text-reset h5" type="button" data-bs-dismiss="offcanvas" aria-label="Close"> No</button>
+                            </div>
+                        </div>
+					</span>
+                </div> 
+            </li>
+        </ul>
+        <footer>
+            <div class="h5 text-end"> Realizzato da: <div class="h6"> Diego Boi </div> </div>
+        </footer>		
 	</body>
 </html>
+

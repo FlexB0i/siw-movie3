@@ -2,6 +2,8 @@ package it.uniroma3.siw.controller;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -31,8 +33,9 @@ public class ArtistController {
 	  //********************************************** //
 
 	  @GetMapping("/indexArtist")
-		public String indexArtist() {
-			return "indexArtist.html";
+		public String indexArtist(Model model) {
+		  model.addAttribute("artists", this.artistService.findAllArtists());
+		  return "indexArtist.html";
 		}
 
 	  @GetMapping("/artist/{id}")
@@ -40,27 +43,45 @@ public class ArtistController {
 	    Artist artist = this.artistService.findArtistById(id);
 	    if ( artist != null) {
 	    	model.addAttribute("artist", artist);
+	    	model.addAttribute("moviesDirected", artist.getDirectorOfMovies());
+	    	model.addAttribute("moviesRecited", artist.getActorOfMovies());
 	    	return "artist.html";
 	    }
 	    else
 			  return "artistError.html";
 	  }
 
-	  @GetMapping("/artists")
-	  public String showArtists(Model model) {
-	    model.addAttribute("artists", this.artistService.findAllArtists());
-	    return "artists.html";
-	  }
-
-	  @GetMapping("/formSearchArtists")
-	  public String formSearchArtists() {
-	    return "formSearchArtists.html";
-	  }
-
 	  @PostMapping("/searchArtists")
-	  public String searchArtists(Model model, @RequestParam String name, @RequestParam String surname) {
-	    model.addAttribute("artists", this.artistService.findaArtistByNameAndSurname(name,surname));
-	    return "foundArtists.html";
+	  public String searchArtists(Model model, @RequestParam("name") String completeArtistName) {
+		  
+		String[] NameSurname = completeArtistName.split(" ");
+		List<Artist> foundArtists = new ArrayList<>();
+		
+		String finalName = completeArtistName;
+		String finalSurname = "";
+		
+		
+		if(NameSurname.length == 2) {
+			String name = NameSurname[0];
+			String surname = NameSurname[1];
+			
+			finalName = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+			finalSurname = surname.substring(0, 1).toUpperCase() + surname.substring(1).toLowerCase();
+			
+			foundArtists = this.artistService.findArtistByNameAndSurname(finalName, finalSurname);
+			if(foundArtists.isEmpty()) {
+				foundArtists = this.artistService.findArtistByNameAndSurname(finalSurname, finalName);
+			}	
+		}else if(NameSurname.length == 1){
+
+			String name = NameSurname[0];
+			finalName = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+			foundArtists = this.artistService.findArtistByNameOrSurname(finalName, finalName);
+		}
+		model.addAttribute("name", finalName);
+		model.addAttribute("surname", finalSurname);
+		model.addAttribute("artists", foundArtists);
+		return "foundArtists.html";
 	  }
 
 	  //************************************* //
@@ -68,7 +89,8 @@ public class ArtistController {
 	  //************************************* //
 
 	  @GetMapping("/admin/indexArtistAdmin")
-	  public String getIndexMovieAdmin() {
+	  public String getIndexMovieAdmin(Model model) {
+		  model.addAttribute("artists", this.artistService.findAllArtists());
 		  return "admin/indexArtistAdmin.html";
 	  }
 
@@ -79,45 +101,50 @@ public class ArtistController {
 	  }
 
 	  @PostMapping("/admin/newArtist")
-	  public String newArtist(@ModelAttribute("artist") Artist artist, @RequestParam("photo") MultipartFile multipartFile,
-			  BindingResult bindingResult, Model model) throws IOException {
+	  public String newArtist(@ModelAttribute("artist") Artist artist, @RequestParam("imageFile") MultipartFile multipartFile,
+			  BindingResult bindingResult, Model model){
 		  
 		  this.artistValidator.validate(artist, bindingResult);
-		  if (!bindingResult.hasErrors()) {
+		  if (!bindingResult.hasErrors() || !multipartFile.isEmpty()) {
 			  
 			  String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-			  artist.setPhoto(fileName);
+			  this.artistService.inizializeArtist(artist, fileName);
 			  
 			  Artist savedArtist = this.artistService.saveArtist(artist);
 			  
-			  String uploadDir = "artist-photo/" + savedArtist.getId();
-			  FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+			  String uploadDir = "./artist-photo/" + savedArtist.getId();
 			  
-			  model.addAttribute("artist", artist);
-			  return "artist.html";
+			  try {
+				FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			  
+			  model.addAttribute("artists", this.artistService.findAllArtists()); 
+			  return "/admin/indexArtistAdmin.html" ;
 		  }
 		  else {
-			  return "admin/formNewArtist.html";
+			  if(multipartFile.isEmpty()) {
+				  model.addAttribute("imageMissed", true);
+				  return "admin/formNewArtist.html";
+			  }
+			  else
+				  return "admin/formNewArtist.html";
 	    }
-	  }
-	  
-	  @GetMapping ("/admin/manageArtists")
-	  public String manageArtists(Model model) {
-		  model.addAttribute("artists", this.artistService.findAllArtists());
-		  return "admin/manageArtists.html";
 	  }
 	  
 	  @GetMapping ("/admin/deleteArtist/{id}")
 	  public String deleteArtist(Model model, @PathVariable("id") Long id) {
 		  this.artistService.deleteArtist(id);
 		  model.addAttribute("artists", this.artistService.findAllArtists());
-		  return "admin/manageArtists.html";
+		  return "admin/indexArtistAdmin.html";
 	  }
 
 	  @PostMapping ("/admin/modifyArtist/{id}")
 	  public String modifyArtist (Model model, @PathVariable("id") Long id,
-			  @RequestParam String name, @RequestParam String surname, @RequestParam LocalDate birth, @RequestParam LocalDate death,
-			  @RequestParam MultipartFile photo) throws IOException {
+			  @RequestParam("name") String name, @RequestParam("surname") String surname, 
+			  @RequestParam("birth") LocalDate birth, @RequestParam("death") LocalDate death,
+			  @RequestParam("imageFile") MultipartFile multipartFile) throws IOException {
 		  
 		  Artist artist = this.artistService.findArtistById(id);
 		  if (artist == null)
@@ -125,20 +152,25 @@ public class ArtistController {
 		  
 		  this.artistService.modifyArtist(artist, name, surname, birth, death);
 		  
-		  if (photo != null) {
-			  String fileName = StringUtils.cleanPath(photo.getOriginalFilename());
+		  if(!multipartFile.isEmpty()) {
+			  
+			  String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+			
 			  artist.setPhoto(fileName);
 			  
-			  Artist savedArtist = this.artistService.saveArtist(artist);
+			  String uploadDir = "./artist-image/" + artist.getId();
 			  
-			  String uploadDir = "artist-photo/" + savedArtist.getId();
-			  FileUploadUtil.saveFile(uploadDir, fileName, photo);
+			  try {
+				FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		  }
-		  else
-			  this.artistService.saveArtist(artist);
-		
-		  model.addAttribute("artist", artist);
-		  return "artist.html";
+		  
+		  this.artistService.saveArtist(artist);
+		  
+		  model.addAttribute("artists", this.artistService.findAllArtists()); 
+		  return "/admin/indexArtistAdmin.html" ;
 	  }
 
 	}

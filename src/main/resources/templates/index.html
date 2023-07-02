@@ -18,7 +18,7 @@
     </head>
 
     <body>
-        <header class="container-fluid">
+        <header class="container-fluid shadow-sm">
             <div class="row">
                 <div class="col h2 header-col text-start text-decoration-underline">
                     Database Di Film E Artisti
@@ -29,13 +29,13 @@
                     </a>
                 </div>
                 <div class="col header-col text-end">
-                    <div class="dropdown">
-                        <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <div class="dropdown header-dropdown">
+                        <button class="btn dropdown-toggle header-dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           <img src="/images/dropdown menu.png">
                         </button>
-                        <ul th:if="${userDetails}" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <ul th:if="${userDetails}" class="dropdown-menu header-dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <li> 
-                                <div class="dropdown-item" style="cursor: default; pointer-events: none;"> 
+                                <div class="dropdown-item header-dropdown-item" style="cursor: default; pointer-events: none;"> 
                                     <img src="/images/avatar.png">
                                     <span th:text="${userDetails.username}"> username </span> 
                                 </div>
@@ -53,25 +53,28 @@
                 </div>
             </div>
         </header>
+        <hr class="index-hr" width="0px">
         <div class="container-fluid container-basso">
-            <div class="row ">
+            <div class="row container-row-index ">
                 <a th:href="@{/indexMovie}" class="col colonneCentrale1 colonneCentrali ">
-                    <p class="h1">
+                    <p class="h1 fw-bolder">
                         Film
                     </p>
-                    <p class="h3">
+                    <p class="h3 fst-italic">
                         consulta il database dei film
                     </p>
+                    <hr class="mx-auto d-block">
                     <img src="/images/film.png"/> 
                 </a>
                     
                 <a th:href="@{/indexArtist}" class="col colonneCentrale2 colonneCentrali">
-                    <p class="h1">
+                    <p class="h1 fw-bolder">
                         Artisti
                     </p>
-                    <p class="h3">
+                    <p class="h3 fst-italic" >
                         consulta il database degli artisti
                     </p>
+                    <hr class="mx-auto d-block">
                     <img src="/images/attori.png"/> 
                 </a>
             </div>

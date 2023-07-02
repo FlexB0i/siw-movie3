@@ -2,56 +2,108 @@
 <html>
 
 <head>
+	<!--Bootstrap Css-->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	
+
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>
 		New Artist
 	</title>
 	<link rel="stylesheet" href="/css/stile.css" />
 </head>
-
 <body>
-	<header>
-		<div th:if="${userDetails}">
-			<span th:text="${userDetails.username}"></span>
-			<a href="/logout">Logout</a>
-		</div>
-		<div th:unless="${user}">
-			<a href="/login">Login</a>
+	<header class="container-fluid shadow-sm">
+		<div class="row">
+			<div class="col header-col text-start">
+				<a href="/" >
+					<img src="/images/logo.png"/>
+				</a>
+			</div>
+			<div class="col header-col text-end">
+				<div class="dropdown header-dropdown">
+					<button class="btn dropdown-toggle header-dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					  <img src="/images/dropdown menu.png">
+					</button>
+					<ul th:if="${userDetails}" class="dropdown-menu header-dropdown-menu" aria-labelledby="dropdownMenuButton">
+						<li> 
+							<div class="dropdown-item header-dropdown-item" style="cursor: default; pointer-events: none;"> 
+								<img src="/images/avatar.png">
+								<span th:text="${userDetails.username}"> username </span> 
+							</div>
+						</li>
+						<li><hr class="dropdown-divider"></li>
+						<li ><a class="dropdown-item" href="/login">Login con un altro account</a></li>
+						<li ><a class="dropdown-item" href="/register">Crea nuovo account</a></li>
+						<li> <a class="dropdown-item" href="/logout">Logout</a></li>
+					</ul>
+					<ul th:unless="${user}" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+						<li ><a class="dropdown-item" href="/login">Login</a></li>
+						<li ><a class="dropdown-item" href="/register">Registrati</a></li>
+					</ul>
+				</div>
+			</div>
 		</div>
 	</header>
-	<div><a href="/"><img src="/logo-siw.png" width="10%"/></a></div>
-	<h1>Aggiungi un artista</h1>
-	<form th:action="@{/newArtist}" method="POST" th:object="${artist}">
+
+	<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+		<symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+		  <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+		</symbol>
+	  </svg>
+
+
+	  <div th:if="${imageMissed}" style="margin-right: 25%; margin-left: 25%; margin-top: 3%;" class="alert alert-danger d-flex align-items-center justify-content-center" role="alert">
+		<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+		<div>
+		  Non è stata selezionata nessuna immagine per la foto dell'artista!
+		</div>
+	  </div>
+
+
+	<div class="h1 form-h1"> Dati del nuovo artista</div>
+	<form class="adminForm rounded-2" th:action="@{/admin/newArtist}" method="POST" th:object="${artist}" enctype="multipart/form-data">
+		
 		<div th:if="${#fields.hasGlobalErrors()}">
-			<p th:each="err:${#fields.globalErrors()}" th:text="{err}"> Errore </p>
+			<p th:each="err:${#fields.globalErrors()}" th:text="{err}" class="text-center h3 mb-4"> Errore </p>
 		</div>
 
-		<div>
-			<label for="name">Nome:</label> <span><input required type="text" th:field="${artist.name}" id="name"/></span>
-			<span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"> </span>
+		<label class="form-label" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"> </label>
+		<div class="input-group mb-3">
+			<span class="input-group-text" id="basic-addon1">Nome</span>
+			<input required th:field="${artist.name}" id="name" type="text" class="form-control" placeholder="Nome" aria-label="name" aria-describedby="basic-addon1">
+		</div>
+		  
+		<label class="form-label" th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"> </label>
+		<div class="input-group mb-3">
+			<span class="input-group-text" id="basic-addon2">Cognome</span>
+			<input required type="text" th:field="${artist.surname}" id="surname" class="form-control" placeholder="Cognome" aria-label="surname" aria-describedby="basic-addon2">
+		</div>
+		  
+		<label class="form-label" th:if="${#fields.hasErrors('birth')}" th:errors="*{birth}"> </label>
+		<div class="input-group mb-3">
+			<span class="input-group-text" id="basic-addon3">Data di nascita</span>
+			<input required type="date" th:field="${artist.birth}" id="birth" class="form-control"  aria-label="birth" aria-describedby="basic-addon3">
 		</div>
 
-		<div>
-			<label for="surname">Cognome:</label> <span><input required type="text" th:field="${artist.surname}" id="surname"/></span>
-			<span th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"> </span>
+		<label class="form-label" th:if="${#fields.hasErrors('death')}" th:errors="*{death}"> </label>
+		<label class="form-label"> Non selezionare alcuna data se l'artista non è morto </label>
+		<div class="input-group mb-3">
+			<span class="input-group-text" id="basic-addon4">Data di morte</span>
+			<input type="date" th:field="${artist.death}" id="death" class="form-control"  aria-label="death" aria-describedby="basic-addon4">
 		</div>
-
+		  
+		<label class="form-label">Fotografia</label>
+		<div class="input-group mb-3">
+  			<input required name="imageFile" id="imageFile" accept="image/png, image/jpeg, image/jpg"  type="file" class="form-control" >
+		</div>	
 		<div>
-			<label for="birth">Data di nascita:</label> <span><input required type="date" th:field="${artist.birth}" id="birth"/></span>
-			<span th:if="${#fields.hasErrors('birth')}" th:errors="*{birth}"> </span>
-		</div>
-
-		<div>
-			<label for="death">Data di morte:</label> <span><input required type="date" th:field="${artist.death}" id="death"/></span>
-			<span th:if="${#fields.hasErrors('death')}" th:errors="*{death}"> </span>
-		</div>
-
-		<div>
-			<label>Fotografia: </label>
-    		<input type="file" name="photo" accept="photo/png, photo/jpeg, photo/jpg" />
-		</div>
-
-		<div>
-			<span><button type="submit">Conferma</button></span>
+			<span> <button type="submit" class="btn btn-primary"> Conferma </button></span>
 		</div>
 	</form>
 </body>

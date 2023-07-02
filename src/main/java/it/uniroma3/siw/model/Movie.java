@@ -2,6 +2,7 @@ package it.uniroma3.siw.model;
 
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,10 +38,16 @@ public class Movie {
     @ManyToOne
     private Artist director;
     
+    private float vote;
+    
+    private Integer numOfVote;
+    
+    private List<Float> allVotes;
+    
     @ManyToMany
     private List<Artist> actors;
     
-    @OneToMany (mappedBy = "movieReviewed")
+    @OneToMany (mappedBy = "movieReviewed", cascade = CascadeType.REMOVE)
     private List<Review> reviews;
     
 	public Long getId() {
@@ -61,12 +68,6 @@ public class Movie {
 	public void setYear(Integer year) {
 		this.year = year;
 	}
-	public String getImage() {
-		return image;
-	}
-	public void setImage(String urlImage) {
-		this.image = urlImage;
-	}
 	public Artist getDirector() {
 		return director;
 	}
@@ -85,9 +86,32 @@ public class Movie {
 	public void setReviews(List<Review> reviews) {
 		this.reviews = reviews;
 	}
-	
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
+	public float getVote() {
+		return vote;
+	}
+	public void setVote(float vote) {
+		this.vote = vote;
+	}
+	public List<Float> getAllVotes() {
+		return allVotes;
+	}
+	public void setAllVotes(List<Float> allVotes) {
+		this.allVotes = allVotes;
+	}
+	public Integer getNumOfVote() {
+		return numOfVote;
+	}
+	public void setNumOfVote(Integer numOfVote) {
+		this.numOfVote = numOfVote;
+	}
 	@Transient
-	public String getImagePath() {
+	public String getPhotosImagePath() {
 		if(this.image == null || id == null) return null;
 		
 		return "/movie-image/" + this.id + "/" + this.image;

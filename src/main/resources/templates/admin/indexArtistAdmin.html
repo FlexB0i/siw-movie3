@@ -1,28 +1,149 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>
-			Operazioni Su Artisti
-		</title>
-		<link rel="stylesheet" href="/css/stile.css" />
+		<!--Bootstrap Css-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        
+
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <title>
+		    Artist homepage
+	    </title>
+	    <link rel="stylesheet" href="/css/stile.css" />
 	</head>
 	<body>
-		<header>
-			<div th:if="${userDetails}">
-				<span th:text="${userDetails.username}"></span>
-				<a href="/logout">Logout</a>
-			</div>
-			<div th:unless="${user}">
-				<a href="/login">Login</a>
-			</div>
-		</header>
-		<div><a href="/"><img src="/logo-siw.png" width="10%"/></a></div>
-		<h1>Operazioni</h1>
-		<div>
-			<a th:href="@{/admin/formNewArtist}">Inserisci i dati di un artista</a>
-		</div>
-		<div>
-			<a th:href="@{/admin/manageArtists}">Gestisci gli artisti</a>
-		</div>
+		<header class="container-fluid shadow-sm">
+            <div class="row">
+				<div class="col header-col text-start">
+                    <a href="/" >
+                        <img src="/images/logo.png"/>
+                    </a>
+                </div>
+                <div class="col h2 header-col text-center">
+                    <form th:action="@{/searchArtists}" method="post">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" name="name" placeholder="Cerca artista per nome, cognome o entrambi" aria-label="name" aria-describedby="basic-addon1">
+                            <span class="input-group-text" id="basic-addon1"> 
+                                <button type="submit" class="btn" > 
+                                    <img src="/images/lente.png"> 
+                                </button> 
+                            </span>
+                          </div>
+                    </form>
+                </div>
+                <div class="col header-col text-end">
+                    <div class="dropdown header-dropdown">
+                        <button class="btn dropdown-toggle header-dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <img src="/images/dropdown menu.png">
+                        </button>
+                        <ul th:if="${userDetails}" class="dropdown-menu header-dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li> 
+                                <div class="dropdown-item header-dropdown-item" style="cursor: default; pointer-events: none;"> 
+                                    <img src="/images/avatar.png">
+                                    <span th:text="${userDetails.username}"> username </span> 
+                                </div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li ><a class="dropdown-item" href="/login">Login con un altro account</a></li>
+                            <li ><a class="dropdown-item" href="/register">Crea nuovo account</a></li>
+                            <li> <a class="dropdown-item" href="/logout">Logout</a></li>
+                        </ul>
+                        <ul th:unless="${user}" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li ><a class="dropdown-item" href="/login">Login</a></li>
+                            <li ><a class="dropdown-item" href="/register">Registrati</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="h1 principal-h1 fw-bold">
+            Lista di tutti gli artisti : 
+        </div> 
+        <div th:if="${artists.isEmpty()}" class="text-center h1 h1-nofilm h1-nofilm-basso fst-italic rounded-2">Non ci sono artisti nel sistema</div>
+        <div> <a class="h6 add-film-link" th:href="@{/admin/formNewArtist}"> Aggiungi artista </a></div>
+        <ul class="list-group film-list-group list-group-flush rounded-2" th:if="${!artists.isEmpty()}">
+            <li th:each="artist : ${artists}" class="list-group-item">
+                <div class="external-list-flexbox">
+                    <a th:href="@{'/artist' + '/' + ${artist.id}}"> <img th:src="@{${artist.PhotoPath}}" width="100px" height="130px"> </a> 
+                    <span class="internal-list-flexbox"> 
+                        <div class="h5" th:text="${artist.name} + ' ' + ${artist.surname}"> Nome Artista</div> 
+                        <div class="h6"> 
+							<span th:text="${artist.birth}"> 00/00/00 </span>
+							<span th:if="${artist.death}">
+							  <span th:text=" ' / ' + ${artist.death}"> / 00/00/00 </span> 
+							</span>
+						</div>
+                    </span>
+					<span class="internal-list-flexbox2">
+						<a th:href="@{'/artist' + '/' + ${artist.id}}" class="list-link">
+							Vedi artista
+						</a>
+                        <button class="btn btn-delete-film link-primary" style="margin-left: -20%; margin-bottom: -4%; margin-top: -6%;" type="button" data-bs-toggle="offcanvas" th:data-bs-target="'#offcanvasBottom1' + ${artist.id}" th:aria-controls="'offcanvasBottom1' + ${artist.id}">Aggiorna artista</button>
+
+                        <div class="offcanvas offcanvas-bottom offcanvas-bottom-update-film text-center" tabindex="-1" th:id="'offcanvasBottom1' + ${artist.id}" th:aria-labelledby="'offcanvasBottomLabel1' + ${artist.id}">
+                            <div class="offcanvas-header align-self-center">
+                                <h2 class="offcanvas-title" th:id="'offcanvasBottomLabel1' + ${artist.id}">Aggiorna i dati dell'artista</h2>
+                            </div>
+                            <div class="offcanvas-body offcanvas-body-update-film">
+                                <form class="adminForm rounded-2" th:action="@{'/admin/modifyArtist' + '/' + ${artist.id}}" method="POST" enctype="multipart/form-data">
+
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1">Nuovo nome</span>
+                                        <input required th:value="${artist.name}" placeholder="Nome artista" name="name" id="titolo" type="text" class="form-control" aria-label="name" aria-describedby="basic-addon1">
+                                    </div>
+                                
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon2">Nuovo cognome</span>
+                                        <input required type="text" th:value="${artist.surname}" name="surname" id="surname" class="form-control" placeholder="Cognome artista" aria-label="surname" aria-describedby="basic-addon2">
+                                    </div>
+                                
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="basic-addon3">Nuova data di nascita</span>
+                                        <input required type="date" th:value="${artist.birth}" name="birth" id="birth" class="form-control" aria-label="birth" aria-describedby="basic-addon3">
+                                    </div>
+
+									<label class="form-label mt-2"> Non selezionare alcuna data se l'artista non è morto </label>
+									<div class="input-group mb-3">
+                                        <span class="input-group-text" id="basic-addon4">Nuova data di morte</span>
+                                        <input type="date" th:value="${artist.death}" name="death" id="death" class="form-control" aria-label="death" aria-describedby="basic-addon4">
+                                    </div>
+                                
+                                    <label class="form-label mt-2"> Lasciare vuoto se non si vuole cambiare la foto dell'artista </label>
+                                    <div class="input-group mb-3">
+                                        <input name="imageFile" accept="image/png, image/jpeg, image/jpg" id="imageFile" type="file" class="form-control" aria-label="imageFile" aria-describedby="basic-addon5">
+                                    </div>
+                                    <div>
+                                        <span><button class="btn btn-primary" type="submit">Conferma</button></span> 
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-delete-film link-primary" style="margin-left: -26%; margin-top: -6%;" type="button" data-bs-toggle="offcanvas" th:data-bs-target="'#offcanvasBottom' + ${artist.id}" th:aria-controls="'offcanvasBottom' + ${artist.id}">Elimina artista</button>
+
+                        <div class="offcanvas offcanvas-bottom offcanvas-bottom-delete-film text-center" tabindex="-1" th:id="'offcanvasBottom' + ${artist.id}" th:aria-labelledby="'offcanvasBottomLabel' + ${artist.id}">
+                            <div class="offcanvas-header">
+                                <h5 class="offcanvas-title" th:id="'offcanvasBottomLabel' + ${artist.id}">Sei sicuro di eliminare questo artista?</h5>
+                            </div>
+                            <div class="offcanvas-body offcanvas-body-delete-film">
+                                <a class="h5 internal-flexbox-link" th:href="@{'/admin/deleteArtist' + '/' + ${artist.id}}">
+                                    Si
+                                </a>
+                                <button class="btn no-btn text-reset h5" type="button" data-bs-dismiss="offcanvas" aria-label="Close"> No</button>
+                            </div>
+                        </div>
+					</span>
+                </div> 
+            </li>
+        </ul>
+        <footer>
+            <div class="h5 text-end"> Realizzato da: <div class="h6"> Diego Boi </div> </div>
+        </footer>		
 	</body>
 </html>

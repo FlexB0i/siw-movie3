@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <!--Bootstrap Css-->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+    <title>Film</title>
+	<link rel="stylesheet" href="/css/stile.css" />
+</head>
+
+<body>
+  <header class="container-fluid shadow-sm">
+    <div class="row">
+<div class="col header-col text-start">
+            <a href="/" >
+                <img src="/images/logo.png"/>
+            </a>
+        </div>
+        <div class="col h2 header-col text-center">
+            <form th:action="@{/searchMovies}" method="post">
+                <div class="input-group mb-3">
+                    <input type="text" th:value="${year}" class="form-control" name="year" placeholder="Cerca film per anno" aria-label="year" aria-describedby="basic-addon1">
+                    <span class="input-group-text" id="basic-addon1"> 
+                        <button type="submit" class="btn" > 
+                            <img src="/images/lente.png"> 
+                        </button> 
+                    </span>
+                  </div>
+            </form>
+        </div>
+        <div class="col header-col text-end">
+            <div class="dropdown header-dropdown">
+                <button class="btn dropdown-toggle header-dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <img src="/images/dropdown menu.png">
+                </button>
+                <ul th:if="${userDetails}" class="dropdown-menu header-dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <li> 
+                        <div class="dropdown-item header-dropdown-item" style="cursor: default; pointer-events: none;"> 
+                            <img src="/images/avatar.png">
+                            <span th:text="${userDetails.username}"> username </span> 
+                        </div>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li ><a class="dropdown-item" href="/login">Login con un altro account</a></li>
+                    <li ><a class="dropdown-item" href="/register">Crea nuovo account</a></li>
+                    <li> <a class="dropdown-item" href="/logout">Logout</a></li>
+                </ul>
+                <ul th:unless="${user}" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <li ><a class="dropdown-item" href="/login">Login</a></li>
+                    <li ><a class="dropdown-item" href="/register">Registrati</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div class="box-film rounded-2">
+      <div class="flexbox-film">
+        <img th:src="@{${movie.PhotosImagePath}}" height="400px" width="350px"/>
+        <div class="flexbox-film-interna">  
+          <div class="h1 text-center fw-bolder" th:text="${movie.title}">
+            Titolo film
+          </div>
+          <hr class="text-center ms-3">
+          <div class="flexbox-film-interna-interna h5">
+            <div class="mx-2 my-1">
+              <span class="fw-bold"> Anno di uscita: </span> <span th:text="${movie.year}"> 2000 </span>
+            </div>
+            <div class="mx-2 my-1">
+              <span class="fw-bold"> Regista: </span> <a th:if="${movie.director != null}" style="text-decoration: none;" th:href="@{'/artist/' + ${movie.director.id}}" th:text="${movie.director.name} + ' ' + ${movie.director.surname}"> Stanley Kubrick </a>
+              <span th:if="${movie.director == null}" class="fst-italic"> non trovato</span>
+            </div>
+            <div class="mx-2 my-1">
+              <span class="fw-bold">Voto sulla piattaforma: </span> <span th:text="${movie.vote} + '/5'"> 3/5 </span> (con <span th:text="${movie.numOfVote}"> 200 </span> voti)
+            </div>
+            <div class="mx-2 my-1 mb-4">
+              <span class="fw-bold"> Attori: </span> 
+              <ul class="list-group list-group-horizontal text-start" th:if="${!actors.isEmpty()}">
+                <li class="h6 list-group-item border-0" th:each="actor : ${actors}">
+                  <a style="text-decoration: none;" th:text="${actor.name} + ' ' + ${actor.surname}" th:href="@{'/artist/' + ${actor.id}}"> Stanley Kubrick </a>
+              </li>
+              </ul>
+              <div th:if="${actors.isEmpty()}" class="fst-italic">
+                Attori per il film non trovati
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>   
+    </div>
+
+    <div class="h1 mt-5" style="margin-left: 20%;"> Recensioni:</div>
+
+    <div class="box-commenti rounded-2">
+      <div>
+        <span th:text="${reviewNumber}" class="ms-3"> 80 </span> <span style="font-size: large;"> recensioni </span> 
+      </div>
+
+      <div th:if="${userReview == null}">
+        <button style="margin-left: 0.35%;" class="btn text-muted btn-offcanvas-review" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">Aggiungi recensione...</button>
+        <hr class="mx-3" style="margin-top: -0.6%;">
+        <div class="offcanvas offcanvas-bottom offcanvas-bottom-review " tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
+          <div class="offcanvas-header align-self-center" >
+            <h2 class="offcanvas-title " id="offcanvasBottomLabel">Aggiungi recensione</h2>
+          </div>
+          <div class="offcanvas-body" >
+
+            <form class="adminForm rounded-2" th:action="@{'/newReview' + '/' + ${movie.id}}" method="POST" th:object="${review}">
+
+              <label class="form-label" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"> </label>
+		          <div class="input-group">
+			          <span class="input-group-text" id="basic-addon1">Titolo</span>
+			          <input required th:field="${review.title}" id="titolo" type="text" class="form-control" placeholder="Titolo recensione" aria-label="titolo" aria-describedby="basic-addon1">
+		          </div>
+          
+              <label class="form-label" th:if="${#fields.hasErrors('vote')}" th:errors="*{vote}"> </label>
+		          <div class="input-group">
+			          <span class="input-group-text" id="basic-addon2">Voto</span>
+			          <input required type="number" th:field="${review.vote}" id="voto" min="1" max="5" class="form-control" placeholder="voto" aria-label="voto" aria-describedby="basic-addon2">
+		          </div>
+
+              <label class="form-label" th:if="${#fields.hasErrors('text')}" th:errors="*{text}"> </label>
+		          <div class="input-group mb-3">
+			          <span class="input-group-text" id="basic-addon3">Testo della recensione</span>
+			          <input required th:field="${review.text}" id="testo" type="text" class="form-control" placeholder="Film molto bello perchè ..." aria-label="testo" aria-describedby="basic-addon3">
+              </div>
+                <div>
+                  <span><button class="btn btn-primary" type="submit">Conferma</button></span> 
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div th:if="${userReview != null}">
+        <button style="margin-left: 0.35%;" class="btn text-muted btn-offcanvas-review" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom1" aria-controls="offcanvasBottom1">Modifica recensione...</button>
+        <hr class="mx-3" style="margin-top: -0.6%;">
+        <div class="offcanvas offcanvas-bottom offcanvas-bottom-review " tabindex="-1" id="offcanvasBottom1" aria-labelledby="offcanvasBottomLabel">
+          <div class="offcanvas-header align-self-center" >
+            <h2 class="offcanvas-title " id="offcanvasBottomLabel">Modifica recensione</h2>
+          </div>
+          <div class="offcanvas-body" >
+
+            <form class="adminForm rounded-2" th:action="@{'/modifyReview' + '/' + ${userReview.id}}" method="POST">
+
+		          <div class="input-group">
+			          <span class="input-group-text" id="basic-addon1">Modifica titolo</span>
+			          <input required th:value="${userReview.title}" id="titolo" type="text" class="form-control" placeholder="Nuovo titolo" name="title" aria-label="titolo" aria-describedby="basic-addon1">
+		          </div>
+          
+		          <div class="input-group">
+			          <span class="input-group-text" id="basic-addon2">Modifica voto</span>
+			          <input required type="number" th:value="${userReview.vote}" id="voto" min="1" max="5" class="form-control" name="vote" placeholder="Nuovo voto" aria-label="voto" aria-describedby="basic-addon2">
+		          </div>
+
+		          <div class="input-group mb-3">
+			          <span class="input-group-text" id="basic-addon3">Testo della recensione</span>
+			          <input required th:value="${userReview.text}" id="testo" type="text" class="form-control" name="text" placeholder="Nuovo testo" aria-label="testo" aria-describedby="basic-addon3">
+              </div>
+                <div>
+                  <span><button class="btn btn-primary" type="submit">Conferma</button></span> 
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div th:if="${userReview != null}">
+        <ul class="list-group list-group-flush" >
+          <li class="list-group-item ">
+            <div style="margin-bottom: -0.2%;" class="small" ><span class="text-muted" th:text="${userReview.userUsername}"> Username </span> <a style="text-decoration: none;" th:href="@{'/deleteReview' + '/' + ${userReview.id} + '/' + ${movie.id}}"> elimina recensione </a> </div>
+            <div class="h5" th:text="${userReview.title}"> Titolo recensione </div>
+            <div style="margin-top: -0.8%;" class="text-muted small"> <span th:text="${userReview.vote} + '/5'"> 4/5 </span></div>
+            <div th:text="${userReview.text}"> testo recensione</div>
+          </li>
+        </ul>
+        <hr class="mx-3">
+      </div>
+      <ul class="list-group list-group-flush" th:if="${!reviews.isEmpty()}">
+        <li class="list-group-item " th:each="review : ${reviews}">
+            <div style="margin-bottom: -0.2%;" class="small" ><span class="text-muted" th:text="${review.userUsername}"> Username </span> <a style="text-decoration: none;" th:href="@{'/deleteReview' + '/' + ${review.id} + '/' + ${movie.id}}"> elimina recensione </a> </div>
+          <div class="h5" th:text="${review.title}"> Titolo recensione </div>
+          <div style="margin-top: -0.8%;" class="text-muted small"> <span th:text="${review.vote} + '/5'"> 4/5 </span></div>
+          <div th:text="${review.text}"> testo recensione</div>
+        </li>
+      </ul>
+    </div>
+
+    <footer>
+      <div class="h5 text-end"> Realizzato da: <div class="h6"> Diego Boi </div> </div>
+    </footer>		
