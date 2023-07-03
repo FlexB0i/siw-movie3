@@ -48,44 +48,40 @@
 				</div>
 			</div>
 	</header>
-	<h1>Inserisci dati per la registrazione</h1>
-	<form th:action="@{/register}" method="POST" >		
-		<div>
-			<label> Nome: </label> 
-			<span>
-				<input type="text" placeholder="name" required="" th:field="${user.name}"/>
-			</span>
-			<span th:if="${#fields.hasErrors('user.name')}" th:errors="${user.name}" th:style="'color:red'"> </span>
-		</div>
+	<form class="loginForm rounded-2" th:action="@{/register}" method="POST">
 
-		<div>
-			<label> Cognome:</label> 
-			<span>
-				<input required="" type="text" placeholder="surname" th:field="${user.surname}" />
-			</span>
-			<span th:if="${#fields.hasErrors('user.surname')}" th:errors="${user.surname}" th:style="'color:red'"> </span>
-		</div>
+		<div class="h1 text-center"> Crea un account</div>
 
-		<div>
-			<label> Username: </label>
-			<span>
-				<input required="" type="text" placeholder="username" th:field="${credentials.username}" />
-			</span>
-			<span th:if="${#fields.hasErrors('credentials.username')}" th:errors="${credentials.username}" th:style="'color:red'"> </span>
+		<label class="form-label" th:if="${#fields.hasErrors('user.name')}" th:errors="${user.name}" th:style="'color:red'"> </label>
+		<div class="input-group mb-3">
+			<span class="input-group-text" id="basic-addon1">Nome</span>
+			<input required="" th:field="${user.name}" id="Nome" type="text" class="form-control" placeholder="Nome" aria-label="Nome" aria-describedby="basic-addon1">
 		</div>
-
-        <div>
-			<label> Password: </label>
-			<span>
-				<input required="" type="password" placeholder="password" th:field="${credentials.password}" />
-			</span>
-			<span th:if="${#fields.hasErrors('credentials.password')}" th:errors="${credentials.password}" th:style="'color:red'"> </span>
+		  
+		<label class="form-label" th:if="${#fields.hasErrors('user.surname')}" th:errors="${user.surname}" th:style="'color:red'"> </label>
+		<div class="input-group mb-3">
+			<span class="input-group-text" id="basic-addon2">Cognome</span>
+			<input required="" type="text" placeholder="Cognome" th:field="${user.surname}" id="Cognome" class="form-control" aria-label="Cognome" aria-describedby="basic-addon2">
 		</div>
-		
+		  
+		<label class="form-label" th:if="${#fields.hasErrors('credentials.username')}" th:errors="${credentials.username}" th:style="'color:red'"> </label>
+		<div class="input-group mb-3">
+			<span class="input-group-text" id="basic-addon3">username</span>
+			<input required="" type="text" placeholder="Username" th:field="${credentials.username}" id="Username" class="form-control" aria-label="Username" aria-describedby="basic-addon3">
+		</div>
+		  
+		<label class="form-label" th:if="${#fields.hasErrors('credentials.password')}" th:errors="${credentials.password}" th:style="'color:red'"> </label>
+		<div class="input-group mb-3">
+			<span class="input-group-text" id="basic-addon2">Password</span>
+			<input required="" type="password" placeholder="Password" th:field="${credentials.password}" id="Password" class="form-control" aria-label="Password" aria-describedby="basic-addon2">
+		</div>
 		<div>
-			<button type="submit">Registrati</button>
+			<span> <button type="submit" class="btn btn-primary"> Registrati </button></span>
 		</div>
 	</form>
+
+	<div class="h4 text-under-loginForm mt-5 text-center"> Hai già un account? <a style="text-decoration: none;" th:href="@{/login}">Vai al login</a> </div>
+
 </body>
 
 </html>

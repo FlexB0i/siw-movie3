@@ -48,27 +48,40 @@
 				</div>
 			</div>
 		</header>
-		
-        <h1>Questa azione richiede il login:</h1>
-        
-        <form th:action="@{/login}" method="POST">
-			<p>
-				<label for="username"> Username </label>
-       	 		<input type="text" id="username" name="username" required />
-			</p>
-			<p>
-				<label for="password">Password</label>
-        		<input type="password" id="password" name="password" required/>
-			</p>
-			
+
+		<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+			<symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+			  <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+			</symbol>
+		</svg>
+
+		<div th:if="${param.error != null}" style="margin-right: 37%; margin-left: 37%; margin-top: 2%;" class="alert alert-danger d-flex align-items-center justify-content-center" role="alert">
+			<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
 			<div>
-				<span th:if="${param.error != null}">Username o password errati</span>
+				Username o password errati
 			</div>
-			
+		</div>
+
+
+
+		<form class="loginForm rounded-2" th:action="@{/login}" method="POST">
+			<div class="h1 mb-5 text-center" >Login</div>
+			<div class="input-group mb-3">
+				<span class="input-group-text" id="basic-addon1">Username</span>
+				<input type="text" id="username" name="username" required class="form-control" placeholder="Username" aria-label="username" aria-describedby="basic-addon1">
+			</div>
+		  
+			<div class="input-group mb-3">
+				<span class="input-group-text" id="basic-addon2">Password</span>
+				<input type="password" id="password" name="password" required placeholder="Password" class="form-control" aria-label="password" aria-describedby="basic-addon2">
+			</div>
+	
 			<div>
-				<button type="submit"> Login </button> 
+				<span> <button type="submit" class="btn btn-primary"> Conferma </button></span>
 			</div>
+
 		</form>
-		<span> Ancora non sei registrato? </span><a th:href="@{/register}" th:text="Registrati">Registrati!</a>
+
+		<div class="h4 text-under-loginForm mt-5 text-center"> Ancora non sei registrato? <a style="text-decoration: none;" th:href="@{/register}">Registrati!</a> </div>
     </body>
 </html>

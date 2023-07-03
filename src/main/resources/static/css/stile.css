@@ -359,3 +359,19 @@ footer{
 .offcanvas-bottom-update-film{
     height: 55%;
 }
+
+.loginForm{
+    margin-left: 37%;
+    margin-right: 37%;
+    background-color: rgb(225, 225, 225);
+    padding: 2%;
+    padding-bottom: 1%;
+    margin-top: 3%;
+}
+
+.successDatas{
+    margin-left: 37%;
+    margin-right: 37%;
+    background-color: white;
+    padding: 2%;
+}

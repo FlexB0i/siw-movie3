@@ -46,17 +46,39 @@
 				</div>
 			</div>
 		</header>
-	<h1>Congratulazioni ti sei registrato!</h1>
-    <div>
-		<span>Nome: </span>
-		<span th:text="${user.name}"></span>
-    </div>
-    <div>
-		<span>Cognome: </span>
-		<span th:text="${user.surname}"></span>
-    </div>
 
-	<a th:href="@{/login}" th:text="Login">Login</a>
+		<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+			<symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+			  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+			</symbol>
+		  </svg>
+
+		  <div class="alert alert-success d-flex align-items-center" style="margin-right: 37%; margin-left: 37%; margin-top: 5%;" role="alert">
+			<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+			<div>
+			  Registrazione avvenuta con successo!
+			</div>
+		</div>
+
+		
+
+		<div class="h1" style="margin-left: 37%;margin-top: 3%;"> Ecco i tuoi dati: </div>
+		<div class="successDatas rounded-2">
+			<div>
+				<span class="h4">Nome: </span>
+				<span th:text="${user.name}"></span>
+			</div>
+			<div>
+				<span class="h4">Cognome: </span>
+				<span th:text="${user.surname}"></span>
+			</div>
+			<div>
+				<span class="h4">Username: </span>
+				<span th:text="${credentials.username}"></span>
+			</div>
+		</div>
+		
+		<div class="h4 text-under-loginForm mt-5 text-center"> Vai al <a style="text-decoration: none;" th:href="@{/login}">login</a> </div>
 </body>
 
 </html>
