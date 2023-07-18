@@ -15,7 +15,7 @@
 	<title>
 		New Artist
 	</title>
-	<link rel="stylesheet" href="/css/stile.css" />
+	<link rel="stylesheet" href="/css/stileSiwMovie.css" />
 </head>
 <body>
 	<header class="container-fluid shadow-sm">
@@ -70,7 +70,7 @@
 	<form class="adminForm rounded-2" th:action="@{/admin/newArtist}" method="POST" th:object="${artist}" enctype="multipart/form-data">
 		
 		<div th:if="${#fields.hasGlobalErrors()}">
-			<p th:each="err:${#fields.globalErrors()}" th:text="{err}" class="text-center h3 mb-4"> Errore </p>
+			<p th:each="err:${#fields.globalErrors()}" th:text="${err}" class="text-center h3 mb-4"> Errore </p>
 		</div>
 
 		<label class="form-label" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"> </label>
