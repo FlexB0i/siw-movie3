@@ -143,7 +143,7 @@ public class ArtistController {
 	  @PostMapping ("/admin/modifyArtist/{id}")
 	  public String modifyArtist (Model model, @PathVariable("id") Long id,
 			  @RequestParam("name") String name, @RequestParam("surname") String surname, 
-			  @RequestParam("birth") LocalDate birth, @RequestParam("death") LocalDate death,
+			  @RequestParam("birth") LocalDate birth, LocalDate death,
 			  @RequestParam("imageFile") MultipartFile multipartFile) throws IOException {
 		  
 		  Artist artist = this.artistService.findArtistById(id);

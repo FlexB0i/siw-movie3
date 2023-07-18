@@ -63,10 +63,10 @@
         <div th:if="${movies.isEmpty()}" class="text-center h1 h1-nofilm fst-italic rounded-2">Non ci sono film nel sistema</div>
         <div class="container-fluid container-top text-center rounded-2 " th:if="${!movies.isEmpty()}">
             <div class="row row-container-top">
-                <div class="col-3 mt-2" th:if="${thirdMovie}">
+                <div class="col-4 mt-2" th:if="${thirdMovie}">
                     <div class="card" style="width: 18rem; height: 520px;">
                         <a th:href="@{'/movie' + '/' + ${thirdMovie.id}}"> 
-                            <img th:src="@{${thirdMovie.PhotosImagePath}}" class="card-img-top" height="400px" width="400px"> 
+                            <img th:src="@{${thirdMovie.PhotosImagePath}}" class="card-img-top w-100 d-block" height="400px"> 
                         </a>
                         <div class="card-body text-start align-items-center">
                             <h5 class="card-title" th:text="${thirdMovie.title}">Titolo film</h5>
@@ -78,10 +78,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-3 mb-4 mt-2" th:if="${firstMovie}">
+                <div class="col-4 mb-4 mt-2" th:if="${firstMovie}">
                     <div class="card" style="width: 18rem; height: 520px;">
                         <a th:href="@{'/movie' + '/' + ${firstMovie.id}}"> 
-                            <img th:src="@{${firstMovie.PhotosImagePath}}" class="card-img-top" height="400px" width="400px"> 
+                            <img th:src="@{${firstMovie.PhotosImagePath}}" class="card-img-top w-100 d-block" height="400px"> 
                         </a>
                         <div class="card-body text-start align-items-center">
                             <h5 class="card-title" th:text="${firstMovie.title}">Titolo film</h5>
@@ -93,10 +93,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-3 mt-2" th:if="${secondMovie}">
+                <div class="col-4 mt-2" th:if="${secondMovie}">
                     <div class="card" style="width: 18rem; height: 520px;">
                         <a th:href="@{'/movie' + '/' + ${secondMovie.id}}"> 
-                            <img th:src="@{${secondMovie.PhotosImagePath}}" class="card-img-top" height="400px" width="400px">
+                            <img th:src="@{${secondMovie.PhotosImagePath}}" class="card-img-top w-100 d-block" height="400px">
                         </a>
                         <div class="card-body text-start align-items-center">
                             <h5 class="card-title" th:text="${secondMovie.title}">Titolo film</h5>
